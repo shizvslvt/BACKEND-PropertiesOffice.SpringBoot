@@ -27,10 +27,13 @@ public class PropertyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PropertyResponse> getPropertyById(@PathVariable("id") Long id) {
+    public ResponseEntity<PropertyResponse> getPropertyById(
+            @PathVariable("id") Long id,
+            @RequestParam(value = "uid", required = false) Long uid
+    ) {
         log.info("getPropertyById");
-        var response = propertyService.getPropertyById(id);
-        return ResponseEntity.ok(toResponse(response));
+        var property = propertyService.getPropertyById(id, uid);
+        return ResponseEntity.ok(toResponse(property));
     }
 
     @PutMapping("/{id}/update")
@@ -47,7 +50,7 @@ public class PropertyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(property));
     }
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}/")
     public ResponseEntity<Void> deleteProperty(@PathVariable("id") Long id) {
         log.info("deleteProperty");
         propertyService.deleteProperty(id);

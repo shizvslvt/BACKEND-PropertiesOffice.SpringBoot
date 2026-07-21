@@ -2,7 +2,6 @@ package com.example.propertiesoffice.property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,9 +13,12 @@ public class PropertyService {
     private final Logger log = LoggerFactory.getLogger(PropertyService.class);
 
     private final PropertyRepository repository;
+    private final PropertyViewRepository viewRepository;
 
-    public PropertyService(PropertyRepository repository) {
+
+    public PropertyService(PropertyRepository repository, PropertyViewRepository viewRepository) {
         this.repository = repository;
+        this.viewRepository = viewRepository;
     }
 
     public List<Property> getAllProperties() {
@@ -25,9 +27,12 @@ public class PropertyService {
 
     }
 
-    public Property getPropertyById(Long id) {
+    public Property getPropertyById(Long id, Long uid) {
         log.info("getPropertyById");
         var entity = repository.findById(id).orElseThrow(() -> new NoSuchElementException("Property not found"));
+
+        if (uid != null) logView(uid, id);
+
         return toDomain(entity);
     }
 
@@ -89,4 +94,8 @@ public class PropertyService {
         );
     }
 
+    private void logView(Long userId, Long propertyId) {
+        var view = new PropertyViewEntity(null, userId, propertyId, LocalDateTime.now().withNano(0));
+        viewRepository.save(view);
+    }
 }
