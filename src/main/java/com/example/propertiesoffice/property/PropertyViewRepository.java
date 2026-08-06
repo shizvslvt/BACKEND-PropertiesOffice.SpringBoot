@@ -10,19 +10,17 @@ import java.util.List;
 public interface PropertyViewRepository extends JpaRepository<PropertyViewEntity, Long> {
 
     @Query("""
-            select new com.example.propertiesoffice.property.PropertyViewedRow(pe, pv.viewedAt)
+            select new com.example.propertiesoffice.property.PropertyViewedRow(pv.property, pv.viewedAt)
             from PropertyViewEntity pv
-            join PropertyEntity pe on pe.id = pv.propertyId
-            where pv.userId = :userId
+            where pv.user.id = :userId
             order by pv.viewedAt desc
             """)
     List<PropertyViewedRow> findRecentViewedPropertiesByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
-        select new com.example.propertiesoffice.property.PropertyViewedRow(pe, pv.viewedAt)
-        from PropertyViewEntity pv
-        join PropertyEntity pe on pe.id = pv.propertyId
-        order by pv.viewedAt desc
-        """)
+            select new com.example.propertiesoffice.property.PropertyViewedRow(pv.property, pv.viewedAt)
+            from PropertyViewEntity pv
+            order by pv.viewedAt desc
+            """)
     List<PropertyViewedRow> findRecentGlobalViews(Pageable pageable);
 }
